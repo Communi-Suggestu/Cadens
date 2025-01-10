@@ -1,5 +1,4 @@
 import * as core from '@actions/core'
-import { wait } from './wait.js'
 
 /**
  * The main function for the action.
@@ -8,20 +7,50 @@ import { wait } from './wait.js'
  */
 export async function run() {
   try {
-    const ms = core.getInput('milliseconds')
+    const fileName = core.getInput('file')
+    const prefix = core.getInput('prefix')
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    //Read the file name in the repository:
+    core.info(`Reading file ${fileName}...`)
+    const fs = require('fs')
+    const data = fs.readFileSync(fileName, 'utf8')
+    const lines = data.split('\n')
+    core.info(`File ${fileName} read successfully!`)
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const prefixLineIndex = lines.findIndex((line) => line.startsWith(prefix))
+    if (prefixLineIndex === -1) {
+      core.setFailed(`Prefix ${prefix} not found in file ${fileName}`)
+      return
+    }
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    // Fail the workflow run if an error occurs
-    if (error instanceof Error) core.setFailed(error.message)
+    //Access git to determine the git history:
+    core.info('Accessing git history...')
+
+    //We need to invoke the git cli to get the git history:
+    const { execSync } = require('child_process')
+    //Command format:git log --pretty=format:%H -L<line>,<line>:<file> -s -1
+    const command = `git log --pretty=format:%H -L${prefixLineIndex + 1},${prefixLineIndex + 1}:${fileName} -s -1`
+    const lastModifiedHash = execSync(command).toString().trim()
+
+    core.info(`Git history accessed successfully!`)
+    core.info(`Last modified commit hash: ${lastModifiedHash}`)
+
+    //Count the commits between the last modified commit and the current commit:
+    core.info('Counting commits...')
+    const currentHash = execSync('git rev-parse HEAD').toString().trim()
+    const commitCount = execSync(
+      `git rev-list --count ${lastModifiedHash}..${currentHash}`
+    )
+      .toString()
+      .trim()
+
+    core.info(`Commit count: ${commitCount}`)
+
+    //Set the output variable:
+    core.setOutput('count', commitCount)
+  } catch (e) {
+    if (e instanceof Error) {
+      core.setFailed(e.message)
+    }
   }
 }

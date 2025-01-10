@@ -1,23 +1,25 @@
-name: The name of your action here
-description: Provide a description here
-author: Your name or organization here
+name: Cadens
+description: Github Actions that returns the commit count since the last change to a line in a file.
+author: Communi-Suggestu
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: heart
-  color: red
+  icon: feather
+  color: yellow
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
+  file:
+    description: The file to check for changes.
     required: true
-    default: '1000'
+  prefix:
+    description: The prefix of the line to check for changes. Only first match is considered.
+    required: true
 
 # Define your outputs here.
 outputs:
-  time:
-    description: Your output description here
+  count:
+    description: The amount of commits since the last change to the line.
 
 runs:
   using: node20
