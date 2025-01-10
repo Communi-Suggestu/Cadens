@@ -1,5 +1,7 @@
 name: Cadens
-description: Github Actions that returns the commit count since the last change to a line in a file.
+description:
+  Github Actions that returns the commit count since the last change to a line
+  in a file.
 author: Communi-Suggestu
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
@@ -13,7 +15,9 @@ inputs:
     description: The file to check for changes.
     required: true
   prefix:
-    description: The prefix of the line to check for changes. Only first match is considered.
+    description:
+      The prefix of the line to check for changes. Only first match is
+      considered.
     required: true
 
 # Define your outputs here.
