@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import * as fs from 'fs'
 
 /**
  * The main function for the action.
@@ -12,7 +13,6 @@ export async function run() {
 
     //Read the file name in the repository:
     core.info(`Reading file ${fileName}...`)
-    const fs = require('fs')
     const data = fs.readFileSync(fileName, 'utf8')
     const lines = data.split('\n')
     core.info(`File ${fileName} read successfully!`)
