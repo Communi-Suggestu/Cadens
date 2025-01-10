@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as fs from 'fs'
+import { execSync } from 'child_process'
 
 /**
  * The main function for the action.
@@ -26,8 +27,6 @@ export async function run() {
     //Access git to determine the git history:
     core.info('Accessing git history...')
 
-    //We need to invoke the git cli to get the git history:
-    const { execSync } = require('child_process')
     //Command format:git log --pretty=format:%H -L<line>,<line>:<file> -s -1
     const command = `git log --pretty=format:%H -L${prefixLineIndex + 1},${prefixLineIndex + 1}:${fileName} -s -1`
     const lastModifiedHash = execSync(command).toString().trim()
