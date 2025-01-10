@@ -24,12 +24,14 @@ export async function run() {
       core.setFailed(`Prefix ${prefix} not found in file ${fileName}`)
       return
     }
+    core.info(`Prefix ${prefix} found in line ${prefixLineIndex + 1}`)
 
     //Access git to determine the git history:
     core.info('Accessing git history...')
 
     //Command format:git log --pretty=format:%H -L<line>,<line>:<file> -s -1
     const command = `git log --pretty=format:%H -L${prefixLineIndex + 1},${prefixLineIndex + 1}:${fileName} -s -1`
+    core.debug(`Executing command: ${command}`)
     const lastModifiedHash = execSync(command).toString().trim()
 
     core.info(`Git history accessed successfully!`)
@@ -38,6 +40,11 @@ export async function run() {
     //Count the commits between the last modified commit and the current commit:
     core.info('Counting commits...')
     const currentHash = execSync('git rev-parse HEAD').toString().trim()
+    core.info(`Current commit hash: ${currentHash}`)
+    core.debug(`Last modified commit hash: ${lastModifiedHash}`)
+    core.debug(
+      `Executing command: git rev-list --count ${lastModifiedHash}..${currentHash}`
+    )
     const commitCount = execSync(
       `git rev-list --count ${lastModifiedHash}..${currentHash}`
     )

@@ -27261,12 +27261,14 @@ async function run() {
       coreExports.setFailed(`Prefix ${prefix} not found in file ${fileName}`);
       return
     }
+    coreExports.info(`Prefix ${prefix} found in line ${prefixLineIndex + 1}`);
 
     //Access git to determine the git history:
     coreExports.info('Accessing git history...');
 
     //Command format:git log --pretty=format:%H -L<line>,<line>:<file> -s -1
     const command = `git log --pretty=format:%H -L${prefixLineIndex + 1},${prefixLineIndex + 1}:${fileName} -s -1`;
+    coreExports.debug(`Executing command: ${command}`);
     const lastModifiedHash = execSync(command).toString().trim();
 
     coreExports.info(`Git history accessed successfully!`);
@@ -27275,6 +27277,11 @@ async function run() {
     //Count the commits between the last modified commit and the current commit:
     coreExports.info('Counting commits...');
     const currentHash = execSync('git rev-parse HEAD').toString().trim();
+    coreExports.info(`Current commit hash: ${currentHash}`);
+    coreExports.debug(`Last modified commit hash: ${lastModifiedHash}`);
+    coreExports.debug(
+      `Executing command: git rev-list --count ${lastModifiedHash}..${currentHash}`
+    );
     const commitCount = execSync(
       `git rev-list --count ${lastModifiedHash}..${currentHash}`
     )
