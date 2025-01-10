@@ -21,6 +21,10 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
 
+      - name: Counter check
+        run: |
+          git log --pretty=format:%H -L1,1:README.md -s -1
+
       - name: Test Local Action
         id: test-action
         uses: ./
