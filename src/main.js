@@ -15,6 +15,7 @@ export async function run() {
     //Read the file name in the repository:
     core.info(`Reading file ${fileName}...`)
     const data = fs.readFileSync(fileName, 'utf8')
+    core.debug(`File data: ${data}`)
     const lines = data.split('\n')
     core.info(`File ${fileName} read successfully!`)
 
