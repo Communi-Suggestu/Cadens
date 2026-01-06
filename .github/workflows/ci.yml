@@ -41,3 +41,36 @@ jobs:
       - name: Print Output
         id: output
         run: echo "${{ steps.test-action.outputs.count }}"
+  test-action-working-directory:
+    name: GitHub Actions Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          path: 'WorkingDir'
+          fetch-depth: 0
+
+      - name: Counter check
+        working-directory: 'WorkingDir'
+        run: |
+          git log --pretty=format:%H -L1,1:README.md -s -1
+
+      - name: Full log
+        working-directory: 'WorkingDir'
+        run: |
+          git log -L1,1:README.md
+
+      - name: Test Local Action
+        id: test-action
+        uses: ./
+        with:
+          working-directory: 'WorkingDir'
+          file: 'README.md'
+          prefix: '# Create a JavaScript Action'
+
+      - name: Print Output
+        id: output
+        run: echo "${{ steps.test-action.outputs.count }}"

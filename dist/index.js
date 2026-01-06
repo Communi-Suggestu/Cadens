@@ -2,7 +2,7 @@ import require$$0 from 'os';
 import require$$0$1 from 'crypto';
 import * as require$$1 from 'fs';
 import require$$1__default from 'fs';
-import require$$1$5 from 'path';
+import require$$1$5, { path } from 'path';
 import require$$2 from 'http';
 import require$$3 from 'https';
 import require$$0$4 from 'net';
@@ -27246,8 +27246,10 @@ var coreExports = requireCore();
  */
 async function run() {
   try {
-    const fileName = coreExports.getInput('file');
     const prefix = coreExports.getInput('prefix');
+    const workingDirectory = coreExports.getInput('working-directory');
+    const fileInput = coreExports.getInput('file');
+    const fileName = path.join(workingDirectory, fileInput);
 
     //Read the file name in the repository:
     coreExports.info(`Reading file ${fileName}...`);
@@ -27269,21 +27271,32 @@ async function run() {
     //Command format:git log --pretty=format:%H -L<line>,<line>:<file> -s -1
     const command = `git log --pretty=format:%H -L${prefixLineIndex + 1},${prefixLineIndex + 1}:${fileName} -s -1`;
     coreExports.debug(`Executing command: ${command}`);
-    const lastModifiedHash = execSync(command).toString().trim();
+    const lastModifiedHash = execSync(command, {
+      cwd: workingDirectory
+    })
+      .toString()
+      .trim();
 
     coreExports.info(`Git history accessed successfully!`);
     coreExports.info(`Last modified commit hash: ${lastModifiedHash}`);
 
     //Count the commits between the last modified commit and the current commit:
     coreExports.info('Counting commits...');
-    const currentHash = execSync('git rev-parse HEAD').toString().trim();
+    const currentHash = execSync('git rev-parse HEAD', {
+      cwd: workingDirectory
+    })
+      .toString()
+      .trim();
     coreExports.info(`Current commit hash: ${currentHash}`);
     coreExports.debug(`Last modified commit hash: ${lastModifiedHash}`);
     coreExports.debug(
       `Executing command: git rev-list --count ${lastModifiedHash}..${currentHash}`
     );
     const commitCount = execSync(
-      `git rev-list --count ${lastModifiedHash}..${currentHash}`
+      `git rev-list --count ${lastModifiedHash}..${currentHash}`,
+      {
+        cwd: workingDirectory
+      }
     )
       .toString()
       .trim();

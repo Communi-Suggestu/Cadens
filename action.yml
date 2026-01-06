@@ -19,6 +19,10 @@ inputs:
       The prefix of the line to check for changes. Only first match is
       considered.
     required: true
+  working-directory:
+    description: The working directory to run inside of.
+    required: false
+    default: './'
 
 # Define your outputs here.
 outputs:
