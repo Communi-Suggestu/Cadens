@@ -27270,7 +27270,7 @@ async function run() {
     coreExports.info('Accessing git history...');
 
     //Command format:git log --pretty=format:%H -L<line>,<line>:<file> -s -1
-    const command = `git log --pretty=format:%H -L${prefixLineIndex + 1},${prefixLineIndex + 1}:${fileName} -s -1`;
+    const command = `git log --pretty=format:%H -L${prefixLineIndex + 1},${prefixLineIndex + 1}:${fileInput} -s -1`;
     coreExports.debug(`Executing command: ${command}`);
     const lastModifiedHash = execSync(command, {
       cwd: workingDirectory
