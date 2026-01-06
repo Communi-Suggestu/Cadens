@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as fs from 'fs'
 import { execSync } from 'child_process'
-import { path } from 'path'
+import * as path from 'path'
 
 /**
  * The main function for the action.
